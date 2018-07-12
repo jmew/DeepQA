@@ -3,7 +3,8 @@ import sys
 import re
 import os
 import datetime
- 
+
+# Returns a list of filtered lines from the specified subtitle
 def get_filtered_data(filename):
     print("Filtering ", filename, "\r\n")
     filtered = []
@@ -19,18 +20,15 @@ def get_filtered_data(filename):
                 # process all
                 full_s = ""
                 for s in dialogue:
+                    s = re.sub(r'[^a-zA-Z,.?! \'-]', u'', s)
+                    s = re.sub(r'- ', u'', s)
+                    s = re.sub(r' -', u'', s)
+                    if len(s) > 0 and s[0] == '-':
+                        s = s[1:]
                     full_s = full_s + " " + s.strip()
-                # full_s = re.search('[a-zA-z](.+?)', full_s).group(0)
-                full_s = re.sub(r'[^a-zA-Z,.?! \'-]', u'', full_s)
-                full_s = re.sub(r'- ', u'', full_s)
-                full_s = re.sub(r' -', u'', full_s)
-                # full_s = re.sub(r'([^\s\w]|_)+', '', full_s)
                 full_s = full_s.strip()
-                if len(full_s) > 3: 
-                    # if full_s[0] == "-":
-                    #      full_s = full_s[1:]
-                
-                    # print "processing: ", full_s
+                if len(full_s) > 3:
+                    # print("processing: ", full_s)
                     filtered.append(full_s)
                 dialogue = []
             else:
@@ -39,14 +37,9 @@ def get_filtered_data(filename):
                 l = l.replace('\n', '')
                 l = l.replace('\r', '')
                 l = l.strip()
-                # if len(l) > 0 and l[0] == '-':
-                #    l = l[1:]
-                #if "Thrilling" in l:
-                #    print l
-                # print l
                 dialogue.append(l)
-    
-    return filtered 
+
+    return filtered
 
 def main():
     if len(sys.argv) != 2:
@@ -58,12 +51,13 @@ def main():
     filenames = []
     for file in os.listdir(dir_name):
         if file.endswith(".txt"):
-            f = os.path.join(dir_name, file) 
+            f = os.path.join(dir_name, file)
             filenames.append(f)
-   
-    training_data = [] 
+
+    training_data = []
     for filename in filenames:
         training_data.extend(get_filtered_data(filename))
+        training_data.append("===")
 
     new_filename = dir_name.replace('/', '') + ".txt"
     with open(new_filename, 'w+') as f:
@@ -72,4 +66,3 @@ def main():
 
 if __name__== "__main__":
     main()
-
