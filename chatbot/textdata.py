@@ -259,7 +259,6 @@ class TextData:
                 # Corpus creation
                 corpusData = TextData.availableCorpus[self.args.corpus](self.corpusDir + optional)
                 self.createFullCorpus(corpusData.getConversations())
-                import pdb;pdb.set_trace()
                 self.saveDataset(self.fullSamplesPath)
             else:
                 self.loadDataset(self.fullSamplesPath)
