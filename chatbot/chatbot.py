@@ -51,6 +51,7 @@ class Chatbot:
         """
         # Model/dataset parameters
         self.args = None
+        self.overrideArgs = None
 
         # Task specific object
         self.textData = None  # Dataset
@@ -97,6 +98,7 @@ class Chatbot:
         globalArgs.add_argument('--createDataset', action='store_true', help='if present, the program will only generate the dataset from the corpus (no training/testing)')
         globalArgs.add_argument('--playDataset', type=int, nargs='?', const=10, default=None,  help='if set, the program  will randomly play some samples(can be use conjointly with createDataset if this is the only action you want to perform)')
         globalArgs.add_argument('--reset', action='store_true', help='use this if you want to ignore the previous model present on the model directory (Warning: the model will be destroyed with all the folder content)')
+        globalArgs.add_argument('--overrideDataset', action='store_true', help='use this if you want train using a different dataset type')
         globalArgs.add_argument('--verbose', action='store_true', help='When testing, will plot the outputs at the same time they are computed')
         globalArgs.add_argument('--debug', action='store_true', help='run DeepQA with Tensorflow debug mode. Read TF documentation for more details on this.')
         globalArgs.add_argument('--keepAll', action='store_true', help='If this option is set, all saved model will be kept (Warning: make sure you have enough free disk space or increase saveEvery)')  # TODO: Add an option to delimit the max size
@@ -147,9 +149,11 @@ class Chatbot:
         # General initialisation
 
         self.args = self.parseArgs(args)
+        self.overrideArgs = self.parseArgs(args)
 
         if not self.args.rootDir:
             self.args.rootDir = os.getcwd()  # Use the current working directory
+            self.overrideArgs.rootDir = self.args.rootDir
 
         #tf.logging.set_verbosity(tf.logging.INFO) # DEBUG, INFO, WARN (default), ERROR, or FATAL
 
@@ -209,6 +213,7 @@ class Chatbot:
 
         # Reload the model eventually (if it exist.), on testing mode, the models are not loaded here (but in predictTestset)
         if self.args.test != Chatbot.TestMode.ALL:
+            print("DEBUG managePreviousModel")
             self.managePreviousModel(self.sess)
 
         # Initialize embeddings with pre-trained word2vec vectors
@@ -240,6 +245,16 @@ class Chatbot:
         """
 
         # Specific training dependent loading
+        if self.args.overrideDataset:
+            # TODO
+            import pdb; pdb.set_trace()
+            # tf.reset_default_graph()
+            self.globStep = 0
+            self.overrideArgs.maxLengthEnco = self.args.maxLengthEnco
+            self.overrideArgs.maxLengthDeco = self.args.maxLengthDeco
+
+            self.textData = TextData(self.overrideArgs)
+            import pdb; pdb.set_trace()
 
         self.textData.makeLighter(self.args.ratioDataset)  # Limit the number of training samples
 
@@ -305,6 +320,7 @@ class Chatbot:
 
         # Predicting for each model present in modelDir
         for modelName in sorted(modelList):  # TODO: Natural sorting
+            print('DEBUG 1')
             print('Restoring previous model from {}'.format(modelName))
             self.saver.restore(sess, modelName)
             print('Testing...')
@@ -491,6 +507,7 @@ class Chatbot:
                 print('Reset: Destroying previous model at {}'.format(self.modelDir))
             # Analysing directory content
             elif os.path.exists(modelName):  # Restore the model
+                print("DEBUG 2")
                 print('Restoring previous model from {}'.format(modelName))
                 self.saver.restore(sess, modelName)  # Will crash when --reset is not activated and the model has not been saved yet
             elif self._getModelList():
