@@ -165,9 +165,25 @@ class Chatbot:
             print('Dataset created! Thanks for using this program')
             return  # No need to go further
 
+        #TODO REMOVE?
+        tf.reset_default_graph()
         # Prepare the model
         with tf.device(self.getDevice()):
             self.model = Model(self.args, self.textData)
+        # ADDED THIS SHIT
+        # vars_to_rename = {
+        #     "lstm/basic_lstm_cell/weights": "lstm/basic_lstm_cell/kernel",
+        #     "lstm/basic_lstm_cell/biases": "lstm/basic_lstm_cell/bias",
+        # }
+        # new_checkpoint_vars = {}
+        # reader = tf.train.NewCheckpointReader(self._getModelName())
+        # for old_name in reader.get_variable_to_shape_map():
+        #     if old_name in vars_to_rename:
+        #         new_name = vars_to_rename[old_name]
+        #     else:
+        #         new_name = old_name
+        #     new_checkpoint_vars[new_name] = tf.Variable(reader.get_tensor(old_name))
+        # END ADDED THIS SHIT
 
         # Saver/summaries
         self.writer = tf.summary.FileWriter(self._getSummaryName())
