@@ -94,3 +94,6 @@ ENV/
 # nvidia-docker-compose
 nvidia-docker-compose.yml
 
+# CUSTOM
+scripts/data/*.txt
+scripts/*.txt
