@@ -213,7 +213,6 @@ class Chatbot:
 
         # Reload the model eventually (if it exist.), on testing mode, the models are not loaded here (but in predictTestset)
         if self.args.test != Chatbot.TestMode.ALL:
-            print("DEBUG managePreviousModel")
             self.managePreviousModel(self.sess)
 
         # Initialize embeddings with pre-trained word2vec vectors
@@ -247,14 +246,34 @@ class Chatbot:
         # Specific training dependent loading
         if self.args.overrideDataset:
             # TODO
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             # tf.reset_default_graph()
             self.globStep = 0
             self.overrideArgs.maxLengthEnco = self.args.maxLengthEnco
             self.overrideArgs.maxLengthDeco = self.args.maxLengthDeco
 
+            # Show the restored params
+            print()
+            print('Warning: Restoring parameters:')
+            print('globStep: {}'.format(self.globStep))
+            print('watsonMode: {}'.format(self.overrideArgs.watsonMode))
+            print('autoEncode: {}'.format(self.overrideArgs.autoEncode))
+            print('corpus: {}'.format(self.overrideArgs.corpus))
+            print('datasetTag: {}'.format(self.overrideArgs.datasetTag))
+            print('maxLength: {}'.format(self.overrideArgs.maxLength))
+            print('filterVocab: {}'.format(self.overrideArgs.filterVocab))
+            print('skipLines: {}'.format(self.overrideArgs.skipLines))
+            print('vocabularySize: {}'.format(self.overrideArgs.vocabularySize))
+            print('hiddenSize: {}'.format(self.overrideArgs.hiddenSize))
+            print('numLayers: {}'.format(self.overrideArgs.numLayers))
+            print('softmaxSamples: {}'.format(self.overrideArgs.softmaxSamples))
+            print('initEmbeddings: {}'.format(self.overrideArgs.initEmbeddings))
+            print('embeddingSize: {}'.format(self.overrideArgs.embeddingSize))
+            print('embeddingSource: {}'.format(self.overrideArgs.embeddingSource))
+            print()
+
             self.textData = TextData(self.overrideArgs)
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
 
         self.textData.makeLighter(self.args.ratioDataset)  # Limit the number of training samples
 
@@ -320,7 +339,6 @@ class Chatbot:
 
         # Predicting for each model present in modelDir
         for modelName in sorted(modelList):  # TODO: Natural sorting
-            print('DEBUG 1')
             print('Restoring previous model from {}'.format(modelName))
             self.saver.restore(sess, modelName)
             print('Testing...')
@@ -507,7 +525,6 @@ class Chatbot:
                 print('Reset: Destroying previous model at {}'.format(self.modelDir))
             # Analysing directory content
             elif os.path.exists(modelName):  # Restore the model
-                print("DEBUG 2")
                 print('Restoring previous model from {}'.format(modelName))
                 self.saver.restore(sess, modelName)  # Will crash when --reset is not activated and the model has not been saved yet
             elif self._getModelList():
