@@ -1,11 +1,13 @@
 Training
 
-1. It is most likely that a training session is already taking place in the background.
+1. Activate anaconda by running the command `source activate tensorflow`
+
+2. It is most likely that a training session is already taking place in the background.
     To check this run `ps -a` and locate a process with CMD=python.
 
-2. To check the progress of the current training session, run the command `cat nohup.out` or `tail -f nohup.out`.
+3. To check the progress of the current training session, run the command `cat nohup.out` or `tail -f nohup.out`.
 
-3. Feel free to start a new training session if you see that there is no current training session going on (step #1).
+4. Feel free to start a new training session if you see that there is no current training session going on (step #1).
 
 Option 1:
     We are currently training on top of a pretrained model called `opensubs`.
