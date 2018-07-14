@@ -18,13 +18,17 @@
 
     2. From within the `scripts` folder, run `python data_filterer.py data/`.
 
-    3. Rename the produced `data.txt` to some unique name (i.e. `day-custom.txt`) and copy it to `<project root dir>/data/lightweight/` folder.
+    3. Rename the produced `data.txt` to `<unique-tag>`.txt (i.e. <unique-tag> could be "day-custom", then your file would be reanmed to `day-custom.txt`).
 
-    4. To continue training the existing model using the custom data, run `nohup python ./main.py --modelTag opensubs --corpus lightweight --datasetTag <dataset-tag-name> --overrideDataset &`.
+    4. Copy the renamed text file to `<project root dir>/data/lightweight/` folder.
 
-        If you had renamed your `data.txt` file to `day-custom.txt`, your <dataset-tag-name> would be `day-custom`.
+    5. In `<project root dir>/data/sample`, remove any old datasets with the same name as current dataset name (i.e. `rm dataset-lightweight-<unique-tag>*.pkl`)
 
-    5. Run `tail -f nohup.out` to ensure that training began successfully (if any error occurs, let me know (dayeong) and just train using option 1)
+    6. To continue training the existing model using the custom data, run `nohup python ./main.py --modelTag opensubs --corpus lightweight --datasetTag <unique-tag> --overrideDataset &`.
+
+        If you had renamed your `data.txt` file to `day-custom.txt`, your <unique-tag> would be `day-custom`.
+
+    7. Run `tail -f nohup.out` to ensure that training began successfully (if any error occurs, let me know (dayeong) and just train using option 1)
 
 
 # Testing: make sure you're on your local machine
