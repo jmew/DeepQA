@@ -22,25 +22,37 @@ def get_filtered_data(filename):
     print("Filtering ", filename, "\r\n")
     filtered = []
     with open(filename, 'r') as f:
-        space = True
+
+        '''
+        Two ways that subtitles are formatted:
+        1. inline
+            {330}{363} some sentence
+
+        2. not inline
+            1
+            00:00:02,292 --> 00:00:03,645  X1:197 X2:518 Y1:484 Y2:524
+            some sentence
+        '''
+        inline = False
+
         lines = f.readlines()
         dialogue = []
         if lines[0][0] == '{':
-            space = False
+            inline = True
 
         for l in lines:
             if l.strip().isdigit():
                 continue
-            if space and ("-->" in l or len(re.findall(r"(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)", l)) > 0):
+            if not inline and ("-->" in l or len(re.findall(r"(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)", l)) > 0):
                 continue
-            if space and l.isspace():
+            if not inline and l.isspace():
                 # process all
                 full_s = ""
                 for s in dialogue:
                     s = clean_string(s)
                     full_s = full_s + " " + s.strip()
                 full_s = full_s.strip()
-                if len(full_s.split(' ')) > 1:
+                if len(full_s) > 0:
                     # print("processing: ", full_s)
                     filtered.append(full_s)
                 dialogue = []
@@ -57,7 +69,7 @@ def get_filtered_data(filename):
                 # print(l)
                 dialogue.append(l)
 
-        if not space:
+        if inline:
             for s in dialogue:
                 s = clean_string(s)
                 if len(s.split(' ')) > 1:
