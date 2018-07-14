@@ -10,12 +10,21 @@ curly = re.compile('\{.+?\}')
 square = re.compile('\[.+?\]')
 
 def clean_string(s):
+    s = round.sub('', s)
+    s = curly.sub('', s)
+    s = square.sub('', s)
+    s = html.sub('', s)
+    s = s.strip()
+    s = s.replace('|', ' ')
+    s = s.replace('. . .', '.')
+    s = s.replace('\n', '')
+    s = s.replace('\r', '')
     s = re.sub(r'[^a-zA-Z,.?! \'-]', u'', s)
     s = re.sub(r'- ', u'', s)
     s = re.sub(r' -', u'', s)
     if len(s) > 0 and (s[0] == '-' or s[0] == '.'):
         s = s[1:]
-    return s
+    return s.strip()
 
 # Returns a list of filtered lines from the specified subtitle
 def get_filtered_data(filename):
@@ -46,28 +55,25 @@ def get_filtered_data(filename):
             if not inline and ("-->" in l or len(re.findall(r"(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)", l)) > 0):
                 continue
             if not inline and l.isspace():
-                # process all
                 full_s = ""
                 for s in dialogue:
+                    # Merge fragmented sub sentences into one sentence
                     s = clean_string(s)
-                    full_s = full_s + " " + s.strip()
+                    full_s = full_s + " " + s
                 full_s = full_s.strip()
                 if len(full_s) > 0:
                     # print("processing: ", full_s)
                     filtered.append(full_s)
                 dialogue = []
             else:
-                l = round.sub('', l)
-                l = curly.sub('', l)
-                l = square.sub('', l)
-                l = html.sub('', l)
-                l = l.replace('|', ' ')
-                l = l.replace('. . .', '.')
-                l = l.replace('\n', '')
-                l = l.replace('\r', '')
                 l = l.strip()
-                # print(l)
-                dialogue.append(l)
+                if len(l) > 0 and l[0] == '-':
+                    # If begins with -, separate person speaking
+                    l = clean_string(l)
+                    filtered.append(l)
+                else:
+                    # It could be one sentence written over multiple lines
+                    dialogue.append(l)
 
         if inline:
             for s in dialogue:
