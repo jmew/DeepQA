@@ -143,14 +143,15 @@ def main(argv=None):
 
     parser = argparse.ArgumentParser(description='Filter txt data.')
     parser.add_argument('--dataType', choices=DataFilterer.dataTypeChoices(), default=DataFilterer.dataTypeChoices()[0], help='type of txt files.')
-    parser.add_argument('--dirName', type=str, default='', help='Directory name that contains the text files')
+    parser.add_argument('--dirName', type=str, default='', help='use this for directory name that contains the text files')
     parser.add_argument('mergeFiles', metavar='mf', type=str, nargs='*', help='Files to be added')
     parser.add_argument('--keepPunctuations', action='store_true', help='use this if you want train using a different dataset type')
     parser.add_argument('--mergeMode', action='store_true', help='use this if you want merge text files instead of filtering them')
+    parser.add_argument('--outputName', type=str, default=None, nargs='?', help='use this if you want to specify output file name')
 
     # Parse arguments
     args = parser.parse_args(argv[1:])
-    # print(args)
+    print(args)
 
     training_data = []
     new_filename = ""
@@ -177,6 +178,9 @@ def main(argv=None):
             training_data.append("===")
 
         new_filename = args.dirName.replace('/', '') + ".txt"
+
+    if args.outputName is not None:
+        new_filename = args.outputName
 
     with open(new_filename, 'w+') as f:
         for l in training_data:
