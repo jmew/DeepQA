@@ -40,3 +40,5 @@ Prerequisites: Set up Tensorflow using Anaconda on your local machine https://ww
 2. Run `copy-checkpoint-from-p2.sh -h` and follow the instructions to copy over saved model from p2.
 
 3. Run `./main.py --modelTag <copied-model-name> --test interactive`
+
+4. Run `./api.py --modelTag <saved-model-name>`

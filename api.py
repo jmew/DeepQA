@@ -12,9 +12,10 @@ def form_example():
     if request.method == 'POST':  #this block is only entered when the form is submitted
         req_data = request.get_json()
         df_req = req_data['queryResult']
-        print(df_req)
+        print(req_data)
         sentence = df_req['queryText']
-        output = felix.predict(sentance)
+        print(sentence)
+        output = felix.predict(sentence)
         return jsonify(
             fulfillmentText=output,
         )
