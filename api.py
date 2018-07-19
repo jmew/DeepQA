@@ -11,14 +11,16 @@ felix = None
 def form_example():
     if request.method == 'POST':  #this block is only entered when the form is submitted
         req_data = request.get_json()
-        sentance = req_data['input']
+        df_req = req_data['queryResult']
+        print(df_req)
+        sentence = df_req['queryText']
         output = felix.predict(sentance)
         return jsonify(
-            reply=output,
+            fulfillmentText=output,
         )
 
 
 if __name__ == '__main__':
     felix = chatbot_api.Chatbot()
     felix.run()
-    app.run(port='5002')
+    app.run(host='0.0.0.0', port='5002')
