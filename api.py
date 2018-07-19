@@ -12,14 +12,27 @@ def form_example():
     if request.method == 'POST':  #this block is only entered when the form is submitted
         req_data = request.get_json()
         df_req = req_data['queryResult']
-        print(req_data)
         sentence = df_req['queryText']
-        print(sentence)
         output = felix.predict(sentence)
-        return jsonify(
-            fulfillmentText=output,
-        )
+        print(output)
+        return jsonify(fulfillmentText=output)
 
+questions = ["will", "would", "could", "can", "is", "are", "am"];
+
+def add_missing_punc(s):
+    # TODO
+    mod_s = s
+    if len(s) == 0:
+        return mod_s
+
+    words = s.lower().split()
+    if words[0] in questions:
+        if s[-1] != "?":
+            mod_s += "?"
+    else if s[-1] != "!" and s[-1] != ".":
+        mod_s += "."
+
+    return mod_s
 
 if __name__ == '__main__':
     felix = chatbot_api.Chatbot()
